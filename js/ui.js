@@ -280,16 +280,25 @@ class UIManager {
     // MARK: - Form Handlers
     handleAddExercise() {
         try {
+            console.log('Starting to add exercise...');
+            
             const name = document.getElementById('exercise-name').value;
             const progressionType = document.getElementById('progression-type').value;
             const bodyPart = document.getElementById('body-part').value;
             const currentWeight = parseFloat(document.getElementById('current-weight').value) || 0;
             const baseReps = parseInt(document.getElementById('base-reps').value) || 10;
             
+            console.log('Form values:', { name, progressionType, bodyPart, currentWeight, baseReps });
+            
             if (!name || !progressionType || !bodyPart) {
+                console.log('Validation failed - missing required fields');
                 this.showNotification('Please fill in all required fields', 'error');
                 return;
             }
+            
+            console.log('Creating exercise object...');
+            console.log('window.LazyGymModels:', window.LazyGymModels);
+            console.log('window.dataManager:', window.dataManager);
             
             const exercise = new window.LazyGymModels.Exercise(
                 name,
@@ -300,7 +309,11 @@ class UIManager {
                 bodyPart
             );
             
+            console.log('Exercise created:', exercise);
+            
             window.dataManager.addExercise(exercise);
+            console.log('Exercise added to data manager');
+            
             this.closeModal('add-exercise-modal');
             this.showNotification('Exercise added successfully!', 'success');
         } catch (error) {
