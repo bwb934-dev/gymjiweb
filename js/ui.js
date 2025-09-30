@@ -16,112 +16,158 @@ class UIManager {
         this.isWorkoutPaused = false;
         this.pausedTime = 0;
         
-        this.initializeEventListeners();
-        this.updateUI();
+        // Wait for DOM to be ready before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeEventListeners();
+                this.updateUI();
+            });
+        } else {
+            this.initializeEventListeners();
+            this.updateUI();
+        }
     }
     
     // MARK: - Initialization
     initializeEventListeners() {
-        // Tab navigation
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                const tabName = e.currentTarget.dataset.tab;
-                this.switchTab(tabName);
+        try {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.currentTarget.dataset.tab;
+                    this.switchTab(tabName);
+                });
             });
-        });
-        
-        // Analytics tab navigation
-        document.querySelectorAll('.analytics-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                const analyticsTab = e.currentTarget.dataset.analytics;
-                this.switchAnalyticsTab(analyticsTab);
+            
+            // Analytics tab navigation
+            document.querySelectorAll('.analytics-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const analyticsTab = e.currentTarget.dataset.analytics;
+                    this.switchAnalyticsTab(analyticsTab);
+                });
             });
-        });
-        
-        // Stat cards navigation
-        document.querySelectorAll('.stat-card[data-tab]').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const tabName = e.currentTarget.dataset.tab;
-                this.switchTab(tabName);
+            
+            // Stat cards navigation
+            document.querySelectorAll('.stat-card[data-tab]').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const tabName = e.currentTarget.dataset.tab;
+                    this.switchTab(tabName);
+                });
             });
-        });
-        
-        // Modal controls
-        this.initializeModalListeners();
-        
-        // Form submissions
-        this.initializeFormListeners();
-        
-        // Workout controls
-        this.initializeWorkoutListeners();
-        
-        // Data manager listeners
-        window.dataManager.addListener('exercises', () => this.updateUI());
-        window.dataManager.addListener('templates', () => this.updateUI());
-        window.dataManager.addListener('history', () => this.updateUI());
-        window.dataManager.addListener('currentSession', () => this.updateUI());
+            
+            // Modal controls
+            this.initializeModalListeners();
+            
+            // Form submissions
+            this.initializeFormListeners();
+            
+            // Workout controls
+            this.initializeWorkoutListeners();
+            
+            // Data manager listeners
+            if (window.dataManager) {
+                window.dataManager.addListener('exercises', () => this.updateUI());
+                window.dataManager.addListener('templates', () => this.updateUI());
+                window.dataManager.addListener('history', () => this.updateUI());
+                window.dataManager.addListener('currentSession', () => this.updateUI());
+            }
+        } catch (error) {
+            console.error('Error initializing event listeners:', error);
+        }
     }
     
     initializeModalListeners() {
-        // Modal close buttons
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.closeAllModals();
-            });
-        });
-        
-        // Modal backgrounds
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
+        try {
+            // Modal close buttons
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', () => {
                     this.closeAllModals();
-                }
+                });
             });
-        });
-        
-        // Start workout button
-        document.getElementById('start-workout-btn').addEventListener('click', () => {
-            this.showWorkoutSelectionModal();
-        });
-        
-        // Continue workout button
-        document.getElementById('continue-workout-btn').addEventListener('click', () => {
-            this.startActiveWorkout();
-        });
-        
-        // Add exercise button
-        document.getElementById('add-exercise-btn').addEventListener('click', () => {
-            this.showAddExerciseModal();
-        });
-        
-        // Add workout button
-        document.getElementById('add-workout-btn').addEventListener('click', () => {
-            this.showAddWorkoutModal();
-        });
-        
-        // Export data button
-        document.getElementById('export-data-btn').addEventListener('click', () => {
-            window.dataManager.exportData();
-        });
+            
+            // Modal backgrounds
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        this.closeAllModals();
+                    }
+                });
+            });
+            
+            // Start workout button
+            const startBtn = document.getElementById('start-workout-btn');
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    this.showWorkoutSelectionModal();
+                });
+            }
+            
+            // Continue workout button
+            const continueBtn = document.getElementById('continue-workout-btn');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', () => {
+                    this.startActiveWorkout();
+                });
+            }
+            
+            // Add exercise button
+            const addExerciseBtn = document.getElementById('add-exercise-btn');
+            if (addExerciseBtn) {
+                addExerciseBtn.addEventListener('click', () => {
+                    this.showAddExerciseModal();
+                });
+            }
+            
+            // Add workout button
+            const addWorkoutBtn = document.getElementById('add-workout-btn');
+            if (addWorkoutBtn) {
+                addWorkoutBtn.addEventListener('click', () => {
+                    this.showAddWorkoutModal();
+                });
+            }
+            
+            // Export data button
+            const exportBtn = document.getElementById('export-data-btn');
+            if (exportBtn && window.dataManager) {
+                exportBtn.addEventListener('click', () => {
+                    window.dataManager.exportData();
+                });
+            }
+        } catch (error) {
+            console.error('Error initializing modal listeners:', error);
+        }
     }
     
     initializeFormListeners() {
-        // Add exercise form
-        document.getElementById('add-exercise-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleAddExercise();
-        });
-        
-        // Progression type change
-        document.getElementById('progression-type').addEventListener('change', (e) => {
-            this.toggleBaseRepsField(e.target.value);
-        });
-        
-        // Add workout form
-        document.getElementById('add-workout-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleAddWorkout();
-        });
+        try {
+            // Add exercise form
+            const exerciseForm = document.getElementById('add-exercise-form');
+            if (exerciseForm) {
+                exerciseForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleAddExercise();
+                });
+            }
+            
+            // Progression type change
+            const progressionType = document.getElementById('progression-type');
+            if (progressionType) {
+                progressionType.addEventListener('change', (e) => {
+                    this.toggleBaseRepsField(e.target.value);
+                });
+            }
+            
+            // Add workout form
+            const workoutForm = document.getElementById('add-workout-form');
+            if (workoutForm) {
+                workoutForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleAddWorkout();
+                });
+            }
+        } catch (error) {
+            console.error('Error initializing form listeners:', error);
+        }
     }
     
     initializeWorkoutListeners() {
@@ -591,30 +637,44 @@ class UIManager {
     
     // MARK: - UI Updates
     updateUI() {
-        this.updateStats();
-        this.updateCurrentSession();
-        
-        switch (this.currentTab) {
-            case 'workouts':
-                this.updateWorkoutsList();
-                break;
-            case 'exercises':
-                this.updateExercisesList();
-                break;
-            case 'history':
-                if (this.currentAnalyticsTab === 'history') {
-                    this.updateHistoryList();
-                } else {
-                    this.updateAnalytics();
-                }
-                break;
+        try {
+            this.updateStats();
+            this.updateCurrentSession();
+            
+            switch (this.currentTab) {
+                case 'workouts':
+                    this.updateWorkoutsList();
+                    break;
+                case 'exercises':
+                    this.updateExercisesList();
+                    break;
+                case 'history':
+                    if (this.currentAnalyticsTab === 'history') {
+                        this.updateHistoryList();
+                    } else {
+                        this.updateAnalytics();
+                    }
+                    break;
+            }
+        } catch (error) {
+            console.error('Error updating UI:', error);
         }
     }
     
     updateStats() {
-        document.getElementById('exercise-count').textContent = window.dataManager.exercises.length;
-        document.getElementById('workout-count').textContent = window.dataManager.workoutTemplates.length;
-        document.getElementById('session-count').textContent = window.dataManager.workoutHistory.length;
+        try {
+            if (window.dataManager) {
+                const exerciseCount = document.getElementById('exercise-count');
+                const workoutCount = document.getElementById('workout-count');
+                const sessionCount = document.getElementById('session-count');
+                
+                if (exerciseCount) exerciseCount.textContent = window.dataManager.exercises.length;
+                if (workoutCount) workoutCount.textContent = window.dataManager.workoutTemplates.length;
+                if (sessionCount) sessionCount.textContent = window.dataManager.workoutHistory.length;
+            }
+        } catch (error) {
+            console.error('Error updating stats:', error);
+        }
     }
     
     updateCurrentSession() {
