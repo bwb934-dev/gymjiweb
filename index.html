@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LazyGym - Workout Tracker</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LazyGym">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#007AFF">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+    
+    <!-- Standard Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <h1>LazyGym</h1>
+                </div>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="home">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </button>
+                    <button class="nav-tab" data-tab="workouts">
+                        <span class="nav-icon">📋</span>
+                        <span>Workouts</span>
+                    </button>
+                    <button class="nav-tab" data-tab="exercises">
+                        <span class="nav-icon">🏋️</span>
+                        <span>Exercises</span>
+                    </button>
+                    <button class="nav-tab" data-tab="history">
+                        <span class="nav-icon">📊</span>
+                        <span>History</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Home Tab -->
+            <div id="home-tab" class="tab-content active">
+                <div class="container">
+                    <div class="hero">
+                        <h2>Ready to Train?</h2>
+                        <p>Track your workouts and build strength with intelligent progression</p>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card" data-tab="exercises">
+                            <div class="stat-icon">🏋️</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="exercise-count">0</div>
+                                <div class="stat-label">Exercises</div>
+                            </div>
+                        </div>
+                        <div class="stat-card" data-tab="workouts">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="workout-count">0</div>
+                                <div class="stat-label">Workouts</div>
+                            </div>
+                        </div>
+                        <div class="stat-card" data-tab="history">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="session-count">0</div>
+                                <div class="stat-label">Sessions</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Start Workout Button -->
+                    <div class="action-section">
+                        <button id="start-workout-btn" class="btn btn-primary btn-large">
+                            <span>▶️</span>
+                            Start Workout
+                        </button>
+                    </div>
+
+                    <!-- Current Session Indicator -->
+                    <div id="current-session-card" class="card current-session" style="display: none;">
+                        <div class="session-header">
+                            <span class="session-icon">⏱️</span>
+                            <span class="session-title">Workout in Progress</span>
+                        </div>
+                        <div class="session-name" id="current-session-name"></div>
+                        <button id="continue-workout-btn" class="btn btn-secondary">Continue Workout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workouts Tab -->
+            <div id="workouts-tab" class="tab-content">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Workouts</h2>
+                        <button id="add-workout-btn" class="btn btn-primary">+ Add Workout</button>
+                    </div>
+
+                    <div id="workouts-list" class="workouts-list">
+                        <!-- Workout items will be dynamically added here -->
+                    </div>
+
+                    <div id="no-workouts" class="empty-state" style="display: none;">
+                        <div class="empty-icon">📋</div>
+                        <h3>No workouts available</h3>
+                        <p>Create some workouts first to start training</p>
+                        <button class="btn btn-primary">Create Your First Workout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercises Tab -->
+            <div id="exercises-tab" class="tab-content">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Exercises</h2>
+                        <button id="add-exercise-btn" class="btn btn-primary">+ Add Exercise</button>
+                    </div>
+
+                    <div id="exercises-list" class="exercises-list">
+                        <!-- Exercise items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history-tab" class="tab-content">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>History & Analytics</h2>
+                        <button id="export-data-btn" class="btn btn-secondary">Export Data</button>
+                    </div>
+
+                    <!-- Analytics Tabs -->
+                    <div class="analytics-tabs">
+                        <button class="analytics-tab active" data-analytics="history">History</button>
+                        <button class="analytics-tab" data-analytics="analytics">Analytics</button>
+                    </div>
+
+                    <!-- History Content -->
+                    <div id="history-content" class="analytics-content active">
+                        <div id="workout-history-list" class="history-list">
+                            <!-- History items will be dynamically added here -->
+                        </div>
+                        <div id="no-history" class="empty-state" style="display: none;">
+                            <div class="empty-icon">📊</div>
+                            <h3>No workout history</h3>
+                            <p>Complete some workouts to see your progress here</p>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Content -->
+                    <div id="analytics-content" class="analytics-content">
+                        <!-- Summary Stats -->
+                        <div class="analytics-section">
+                            <h3>Summary</h3>
+                            <div class="stats-grid">
+                                <div class="analytics-stat-card">
+                                    <div class="stat-icon">🏋️</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="total-workouts">0</div>
+                                        <div class="stat-label">Total Workouts</div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stat-card">
+                                    <div class="stat-icon">📅</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="avg-per-week">0</div>
+                                        <div class="stat-label">Avg/Week</div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stat-card">
+                                    <div class="stat-icon">🏆</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="heaviest-lift">0kg</div>
+                                        <div class="stat-label">Heaviest Lift</div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stat-card">
+                                    <div class="stat-icon">🔥</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="longest-streak">0 days</div>
+                                        <div class="stat-label">Longest Streak</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Exercise Progression Chart -->
+                        <div class="analytics-section">
+                            <h3>Exercise Progression</h3>
+                            <div class="chart-controls">
+                                <select id="exercise-selector" class="form-select">
+                                    <option value="">Select Exercise</option>
+                                </select>
+                                <select id="metric-selector" class="form-select">
+                                    <option value="weight">Weight</option>
+                                    <option value="reps">Reps</option>
+                                    <option value="volume">Volume</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="progression-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Exercise Modal -->
+    <div id="add-exercise-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Exercise</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-exercise-form">
+                    <div class="form-group">
+                        <label for="exercise-name">Exercise Name</label>
+                        <input type="text" id="exercise-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="progression-type">Progression Type</label>
+                        <select id="progression-type" class="form-select" required>
+                            <option value="amrap">AMRAP</option>
+                            <option value="pyramid">Pyramid</option>
+                            <option value="free">Free</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="body-part">Body Part</label>
+                        <select id="body-part" class="form-select" required>
+                            <option value="upper">Upper Body</option>
+                            <option value="lower">Lower Body</option>
+                            <option value="full">Full Body</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="current-weight">Current Weight (kg)</label>
+                        <input type="number" id="current-weight" class="form-input" step="0.5" min="0" value="0">
+                    </div>
+                    <div class="form-group" id="base-reps-group" style="display: none;">
+                        <label for="base-reps">Base Reps (for Pyramid)</label>
+                        <input type="number" id="base-reps" class="form-input" min="1" value="10">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary modal-close">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Exercise</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Workout Modal -->
+    <div id="add-workout-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Workout</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-workout-form">
+                    <div class="form-group">
+                        <label for="workout-name">Workout Name</label>
+                        <input type="text" id="workout-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workout-focus">Focus</label>
+                        <select id="workout-focus" class="form-select" required>
+                            <option value="upper">Upper Body</option>
+                            <option value="lower">Lower Body</option>
+                            <option value="full">Full Body</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Exercises</label>
+                        <div id="exercise-selection" class="exercise-selection">
+                            <!-- Exercise checkboxes will be added here -->
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary modal-close">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Workout</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Selection Modal -->
+    <div id="workout-selection-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select Workout</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="workout-selection-list" class="workout-selection-list">
+                    <!-- Workout selection items will be added here -->
+                </div>
+                <div id="no-workouts-selection" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📋</div>
+                    <h3>No workouts available</h3>
+                    <p>Create some workouts first to start training</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Workout Modal -->
+    <div id="active-workout-modal" class="modal active-workout-modal">
+        <div class="modal-content active-workout-content">
+            <div class="workout-header">
+                <div class="workout-timer">
+                    <div class="timer-display" id="workout-timer">00:00</div>
+                    <button id="pause-workout-btn" class="btn btn-icon">⏸️</button>
+                    <button id="exit-workout-btn" class="btn btn-icon">❌</button>
+                </div>
+            </div>
+            
+            <div class="workout-content">
+                <div id="workout-exercise-info" class="exercise-info">
+                    <!-- Current exercise info will be displayed here -->
+                </div>
+                
+                <div id="workout-set-info" class="set-info">
+                    <!-- Current set info will be displayed here -->
+                </div>
+                
+                <div class="workout-actions">
+                    <button id="complete-set-btn" class="btn btn-primary btn-large">Complete Set</button>
+                    <button id="skip-set-btn" class="btn btn-secondary">Skip Set</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest Timer Modal -->
+    <div id="rest-timer-modal" class="modal rest-timer-modal">
+        <div class="modal-content rest-timer-content">
+            <div class="rest-timer-header">
+                <h3>Rest Time</h3>
+            </div>
+            <div class="rest-timer-body">
+                <div class="timer-display" id="rest-timer">01:30</div>
+                <div class="timer-progress">
+                    <div class="progress-ring">
+                        <svg class="progress-ring-svg" width="120" height="120">
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="54"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rest-timer-actions">
+                    <button id="add-rest-time-btn" class="btn btn-secondary">+ 30s</button>
+                    <button id="skip-rest-btn" class="btn btn-primary">Skip Rest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Summary Modal -->
+    <div id="workout-summary-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Workout Complete!</h3>
+            </div>
+            <div class="modal-body">
+                <div id="workout-summary-content">
+                    <!-- Summary content will be displayed here -->
+                </div>
+                <div class="modal-actions">
+                    <button id="close-summary-btn" class="btn btn-primary">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/dataManager.js"></script>
+    <script src="js/progressionCalculator.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
