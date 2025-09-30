@@ -279,50 +279,75 @@ class UIManager {
     
     // MARK: - Form Handlers
     handleAddExercise() {
-        const formData = new FormData(document.getElementById('add-exercise-form'));
-        const exercise = new window.LazyGymModels.Exercise(
-            formData.get('exercise-name') || document.getElementById('exercise-name').value,
-            document.getElementById('progression-type').value,
-            document.getElementById('body-part').value === 'upper',
-            parseFloat(document.getElementById('current-weight').value) || 0,
-            parseInt(document.getElementById('base-reps').value) || 10,
-            document.getElementById('body-part').value
-        );
-        
-        window.dataManager.addExercise(exercise);
-        this.closeModal('add-exercise-modal');
-        this.showNotification('Exercise added successfully!', 'success');
+        try {
+            const name = document.getElementById('exercise-name').value;
+            const progressionType = document.getElementById('progression-type').value;
+            const bodyPart = document.getElementById('body-part').value;
+            const currentWeight = parseFloat(document.getElementById('current-weight').value) || 0;
+            const baseReps = parseInt(document.getElementById('base-reps').value) || 10;
+            
+            if (!name || !progressionType || !bodyPart) {
+                this.showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const exercise = new window.LazyGymModels.Exercise(
+                name,
+                progressionType,
+                bodyPart === 'upper',
+                currentWeight,
+                baseReps,
+                bodyPart
+            );
+            
+            window.dataManager.addExercise(exercise);
+            this.closeModal('add-exercise-modal');
+            this.showNotification('Exercise added successfully!', 'success');
+        } catch (error) {
+            console.error('Error adding exercise:', error);
+            this.showNotification('Error adding exercise. Please try again.', 'error');
+        }
     }
     
     handleAddWorkout() {
-        const name = document.getElementById('workout-name').value;
-        const focus = document.getElementById('workout-focus').value;
-        
-        // Get selected exercises
-        const selectedExercises = [];
-        document.querySelectorAll('#exercise-selection input[type="checkbox"]:checked').forEach(checkbox => {
-            const exerciseId = checkbox.value;
-            const exercise = window.dataManager.exercises.find(e => e.id === exerciseId);
-            if (exercise) {
-                selectedExercises.push(exercise);
+        try {
+            const name = document.getElementById('workout-name').value;
+            const focus = document.getElementById('workout-focus').value;
+            
+            if (!name || !focus) {
+                this.showNotification('Please fill in all required fields', 'error');
+                return;
             }
-        });
-        
-        if (selectedExercises.length === 0) {
-            this.showNotification('Please select at least one exercise', 'error');
-            return;
+            
+            // Get selected exercises
+            const selectedExercises = [];
+            document.querySelectorAll('#exercise-selection input[type="checkbox"]:checked').forEach(checkbox => {
+                const exerciseId = checkbox.value;
+                const exercise = window.dataManager.exercises.find(e => e.id === exerciseId);
+                if (exercise) {
+                    selectedExercises.push(exercise);
+                }
+            });
+            
+            if (selectedExercises.length === 0) {
+                this.showNotification('Please select at least one exercise', 'error');
+                return;
+            }
+            
+            const template = new window.LazyGymModels.WorkoutTemplate(
+                name,
+                selectedExercises,
+                [],
+                focus
+            );
+            
+            window.dataManager.addWorkoutTemplate(template);
+            this.closeModal('add-workout-modal');
+            this.showNotification('Workout created successfully!', 'success');
+        } catch (error) {
+            console.error('Error adding workout:', error);
+            this.showNotification('Error adding workout. Please try again.', 'error');
         }
-        
-        const template = new window.LazyGymModels.WorkoutTemplate(
-            name,
-            selectedExercises,
-            [],
-            focus
-        );
-        
-        window.dataManager.addWorkoutTemplate(template);
-        this.closeModal('add-workout-modal');
-        this.showNotification('Workout created successfully!', 'success');
     }
     
     toggleBaseRepsField(progressionType) {

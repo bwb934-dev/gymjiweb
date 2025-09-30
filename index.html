@@ -247,11 +247,11 @@
                 <form id="add-exercise-form">
                     <div class="form-group">
                         <label for="exercise-name">Exercise Name</label>
-                        <input type="text" id="exercise-name" class="form-input" required>
+                        <input type="text" id="exercise-name" name="exercise-name" class="form-input" required>
                     </div>
                     <div class="form-group">
                         <label for="progression-type">Progression Type</label>
-                        <select id="progression-type" class="form-select" required>
+                        <select id="progression-type" name="progression-type" class="form-select" required>
                             <option value="amrap">AMRAP</option>
                             <option value="pyramid">Pyramid</option>
                             <option value="free">Free</option>
@@ -259,7 +259,7 @@
                     </div>
                     <div class="form-group">
                         <label for="body-part">Body Part</label>
-                        <select id="body-part" class="form-select" required>
+                        <select id="body-part" name="body-part" class="form-select" required>
                             <option value="upper">Upper Body</option>
                             <option value="lower">Lower Body</option>
                             <option value="full">Full Body</option>
@@ -267,11 +267,11 @@
                     </div>
                     <div class="form-group">
                         <label for="current-weight">Current Weight (kg)</label>
-                        <input type="number" id="current-weight" class="form-input" step="0.5" min="0" value="0">
+                        <input type="number" id="current-weight" name="current-weight" class="form-input" step="0.5" min="0" value="0">
                     </div>
                     <div class="form-group" id="base-reps-group" style="display: none;">
                         <label for="base-reps">Base Reps (for Pyramid)</label>
-                        <input type="number" id="base-reps" class="form-input" min="1" value="10">
+                        <input type="number" id="base-reps" name="base-reps" class="form-input" min="1" value="10">
                     </div>
                     <div class="modal-actions">
                         <button type="button" class="btn btn-secondary modal-close">Cancel</button>
@@ -293,11 +293,11 @@
                 <form id="add-workout-form">
                     <div class="form-group">
                         <label for="workout-name">Workout Name</label>
-                        <input type="text" id="workout-name" class="form-input" required>
+                        <input type="text" id="workout-name" name="workout-name" class="form-input" required>
                     </div>
                     <div class="form-group">
                         <label for="workout-focus">Focus</label>
-                        <select id="workout-focus" class="form-select" required>
+                        <select id="workout-focus" name="workout-focus" class="form-select" required>
                             <option value="upper">Upper Body</option>
                             <option value="lower">Lower Body</option>
                             <option value="full">Full Body</option>
